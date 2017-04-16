@@ -7,8 +7,7 @@ import java.net.Socket;
 public class ThreadServer extends Thread
 {
 	private int usbPort;
-	private int nsamples;
-	private int ts;
+	private double ts;
 	private int server_answer = 2958;
 	private int valid_client_request = 45862;
 	private int finish = 0;
@@ -23,8 +22,8 @@ public class ThreadServer extends Thread
 	{
 		this.gui = gui;
 		this.usbPort = 16;
-		this.nsamples = 50;
-		this.ts = 1;
+		this.ts = 0.1;
+		
 		// Create server
 		System.out.println("Stating Loggin thread");
 		try 
@@ -69,8 +68,6 @@ public class ThreadServer extends Thread
 					System.out.println("Valid request value");
 					try {
 						out.writeInt(this.server_answer);
-						//out.writeInt(this.usbPort);
-						out.writeInt(this.ts);
 					} catch (IOException e) {
 						System.out.println("No se pudo escribir valor al cliente");
 						e.printStackTrace();
@@ -80,15 +77,30 @@ public class ThreadServer extends Thread
 				else
 				{
 					System.out.println("Invalid request value");
-					try {
+					try 
+					{
 						out.writeInt(this.server_answer+1);
-					} catch (IOException e) {
+					} catch (IOException e) 
+					{
 						System.out.println("No se pudo escribir valor al cliente");
 						e.printStackTrace();
 						return;
 					}
 				}
 				System.out.println("client_request = "+String.valueOf(client_request));
+				
+				// Send parámeters
+				try 
+				{
+					out.writeInt(this.usbPort);
+					out.writeDouble(this.ts);
+				} catch (IOException e) 
+				{
+					System.out.println("Error al enviar parámetros usbPort, Ts");
+					e.printStackTrace();
+					return;
+				}
+				
 			}// finally 
 			
 		}//finally
@@ -104,18 +116,21 @@ public class ThreadServer extends Thread
 	
 	public void run()
 	{
-		double i = 0.0;
+		double sig_value = 0.0;
+		double time_value = 0.0;
 		while(this.alive)
 		{
-			try {
-				i = this.in.readDouble();
+			try 
+			{
+				sig_value = this.in.readDouble();
+				time_value = this.in.readDouble();
 				out.writeInt(this.finish);
 			} catch (IOException e) 
 			{
 				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 				e.printStackTrace();
 			}
-			System.out.println("contando: "+String.valueOf(i));
+			System.out.format("sig = %.4f      time = %.4f\n", sig_value, time_value);
 		}
 		try 
 		{
