@@ -3,7 +3,7 @@ Este repositorio contiene la implementación del servidor Java incluyendo la
 interfaz gráfica y otras utilidades para realizar el muestreo, gráficar y guardar
 los datos capturados por la aplicación.
 
-## Istrucciones:
+## Instrucciones:
 
 ### Compilar:
 Para compilar este proyecto, en primer lugar debe ejecutar la siguiente línea en la
