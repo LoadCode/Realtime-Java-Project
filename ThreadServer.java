@@ -8,6 +8,7 @@ public class ThreadServer extends Thread
 {
 	private int usbPort;
 	private double ts;
+	private double step_time;
 	private int server_answer = 2958;
 	private int valid_client_request = 45862;
 	private int finish = 0;
@@ -18,9 +19,9 @@ public class ThreadServer extends Thread
 	private DataInputStream in;
 	private volatile boolean alive = true;
 	
-	public ThreadServer(Window gui)
+	public ThreadServer(Window _gui)
 	{
-		this.gui = gui;
+		this.gui = _gui;
 		this.usbPort = 16;
 		this.ts = 0.1;
 		
@@ -89,8 +90,13 @@ public class ThreadServer extends Thread
 				}
 				System.out.println("client_request = "+String.valueOf(client_request));
 				
+				// get user parameters
+				this.ts = Double.parseDouble(this.gui.txt_sample_time.getText());
+				this.usbPort = Integer.parseInt(this.gui.txt_sample_time.getText());
+				this.step_time = Double.parseDouble(this.gui.txt_step_time.getText());
+				
 				// Send parámeters
-				try 
+				try
 				{
 					out.writeInt(this.usbPort);
 					out.writeDouble(this.ts);
@@ -130,7 +136,16 @@ public class ThreadServer extends Thread
 				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 				e.printStackTrace();
 			}
-			System.out.format("sig = %.4f      time = %.4f\n", sig_value, time_value);
+			this.gui.dataLogged.add(time_value, sig_value);
+		}
+		try 
+		{
+			System.out.println("Esperando para cerrar los sockets");
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) 
+		{
+			System.out.println("Error esperando para cerrar los sockets");
+			e1.printStackTrace();
 		}
 		try 
 		{
