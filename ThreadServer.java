@@ -1,14 +1,17 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import javax.swing.JFileChooser;
 
 public class ThreadServer extends Thread
 {
 	private int usbPort;
 	private double ts;
 	private double step_time;
+	private double setpoint;
 	private int server_answer = 2958;
 	private int valid_client_request = 45862;
 	private int finish = 0;
@@ -58,7 +61,8 @@ public class ThreadServer extends Thread
 			try 
 			{
 				client_request = this.in.readInt();
-			} catch (IOException e) {
+			} catch (IOException e) 
+			{
 				System.out.println("No se pudo escribir valor al cliente");
 				e.printStackTrace();
 				return;
@@ -88,47 +92,74 @@ public class ThreadServer extends Thread
 						return;
 					}
 				}
-				System.out.println("client_request = "+String.valueOf(client_request));
-				
-				// get user parameters
-				this.ts = Double.parseDouble(this.gui.txt_sample_time.getText());
-				this.usbPort = Integer.parseInt(this.gui.txt_sample_time.getText());
-				this.step_time = Double.parseDouble(this.gui.txt_step_time.getText());
-				
-				// Send parámeters
-				try
-				{
-					out.writeInt(this.usbPort);
-					out.writeDouble(this.ts);
-				} catch (IOException e) 
-				{
-					System.out.println("Error al enviar parámetros usbPort, Ts");
-					e.printStackTrace();
-					return;
-				}
-				
 			}// finally 
-			
 		}//finally
-		
-		
 	}//ThreadServer
 	
 	public void terminate()
 	{
 		this.alive = false;
 		this.finish = 1;
+		System.out.format("La cantidad de elementos es: %d\n", this.gui.process_output.getItemCount());
+		
+		// option to save the captured data
+		double[][] logged_signal = this.gui.process_output.toArray();
+		double[][] control_signal = this.gui.process_input.toArray();
+		
+		// Dialogo para seleccionar donde almacenar el archivo
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Indicar el archivo a guardar");
+		int userSelection = fileChooser.showSaveDialog(this.gui);
+		 
+		if (userSelection == JFileChooser.APPROVE_OPTION) 
+		{
+		    File fileToSave = fileChooser.getSelectedFile();
+		    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+		    FileManager fileSaving = new FileManager(fileToSave.getAbsolutePath());
+			fileSaving.save_array(logged_signal, control_signal);
+			System.out.println("Archivo guardado");
+		}
+		else
+		{
+			System.out.println("Datos descartados");
+		}
+		
 	}
 	
 	public void run()
 	{
-		double sig_value = 0.0;
+		double output_process_val = 0.0;
+		double input_process_val  = 0.0;
 		double time_value = 0.0;
+		
+		// get user parameters
+		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
+		this.ts = Double.parseDouble(this.gui.txt_sample_time.getText());
+		this.setpoint = Double.parseDouble(this.gui.txt_setpoint.getText());
+		this.step_time = Double.parseDouble(this.gui.txt_step_time.getText());
+		
+		// Send parámeters
+		try
+		{
+			out.writeInt(this.usbPort);
+			out.writeDouble(this.ts);
+			out.writeDouble(this.setpoint);
+			out.writeDouble(this.step_time);
+		}
+		catch (IOException e) 
+		{
+			System.out.println("Error al enviar parámetros usbPort, Ts");
+			e.printStackTrace();
+			return;
+		}
+		
+		
 		while(this.alive)
 		{
 			try 
 			{
-				sig_value = this.in.readDouble();
+				output_process_val = this.in.readDouble();
+				input_process_val  = this.in.readDouble();
 				time_value = this.in.readDouble();
 				out.writeInt(this.finish);
 			} catch (IOException e) 
@@ -136,7 +167,8 @@ public class ThreadServer extends Thread
 				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 				e.printStackTrace();
 			}
-			this.gui.dataLogged.add(time_value, sig_value);
+			this.gui.process_output.add(time_value, output_process_val);
+			this.gui.process_input.add(time_value, input_process_val);
 		}
 		try 
 		{
