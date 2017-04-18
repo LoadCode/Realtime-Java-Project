@@ -19,6 +19,7 @@ public class Window extends JFrame
 	private static final long serialVersionUID = 1L;
 	final XYSeries process_output;
 	final XYSeries process_input;
+	final XYSeries process_setpoint;
 	final XYSeriesCollection collectionData;
 	final JFreeChart display;
 	public JTextField txt_port;
@@ -81,21 +82,24 @@ public class Window extends JFrame
 		this.getContentPane().add(mainPanel, BorderLayout.EAST);
 		
 		// Setup the Chart panel
-		process_input = new XYSeries("Process Input");
-		process_output = new XYSeries("Process Output");
+		process_input    = new XYSeries("Process Input");
+		process_output   = new XYSeries("Process Output");
+		process_setpoint = new XYSeries("Setpoint");
 		process_input.clear();
 		process_output.clear();
+		process_setpoint.clear();
 		collectionData = new XYSeriesCollection();
 		collectionData.addSeries(process_input);
 		collectionData.addSeries(process_output);
+		collectionData.addSeries(process_setpoint);
 		display = ChartFactory.createXYLineChart("Realtime Process Dynamics",
-													 "Time",
-													 "Amplitude",
-													 collectionData,
-													 PlotOrientation.VERTICAL,
-													 true,
-													 true,
-													 false);
+												 "Time",
+												 "Amplitude",
+												 collectionData,
+												 PlotOrientation.VERTICAL,
+												 true,
+												 true,
+												 false);
 		JPanel rt_panel = new ChartPanel(display);
 		this.getContentPane().add(rt_panel, BorderLayout.CENTER);
 		this.setVisible(true);
