@@ -102,12 +102,12 @@ public class ThreadServer extends Thread
 	{
 		this.alive = false;
 		this.finish = 1;
-		System.out.format("La cantidad de elementos es: %d\n", this.gui.process_output.getItemCount());
+		System.out.format("La cantidad de elementos es: %d\n", this.gui.output_I.getItemCount());
 		
 		// option to save the captured data
-		double[][] logged_signal = this.gui.process_output.toArray();
-		double[][] control_signal = this.gui.process_input.toArray();
-		double[][] setpoint_signal = this.gui.process_setpoint.toArray();
+		double[][] logged_signal = this.gui.output_I.toArray();
+		double[][] control_signal = this.gui.input_I.toArray();
+		double[][] setpoint_signal = this.gui.setpoint_I.toArray();
 		
 		// Dialogo para seleccionar donde almacenar el archivo
 		JFileChooser fileChooser = new JFileChooser();
@@ -136,11 +136,11 @@ public class ThreadServer extends Thread
 		
 		// get user parameters
 		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
-		this.ts = Double.parseDouble(this.gui.txt_sample_time.getText());
-		this.setpoint = Double.parseDouble(this.gui.txt_setpoint.getText());
-		this.Kp = Double.parseDouble(this.gui.txt_kp.getText());
-		this.Ki = Double.parseDouble(this.gui.txt_ki.getText());
-		this.Kd = Double.parseDouble(this.gui.txt_kd.getText());
+		this.ts = Double.parseDouble(this.gui.txt_sample_time_I.getText());
+		this.setpoint = Double.parseDouble(this.gui.txt_setpoint_I.getText());
+		this.Kp = Double.parseDouble(this.gui.txt_kp_T.getText());
+		this.Ki = Double.parseDouble(this.gui.txt_ki_T.getText());
+		this.Kd = Double.parseDouble(this.gui.txt_kd_T.getText());
 		
 		// Send parámeters usbPort Ts, setpoint, & PID parameters
 		try
@@ -173,9 +173,9 @@ public class ThreadServer extends Thread
 				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 				e.printStackTrace();
 			}
-			this.gui.process_output.add(time_value, output_process_val);
-			this.gui.process_input.add(time_value, input_process_val);
-			this.gui.process_setpoint.add(time_value, this.setpoint);
+			this.gui.output_I.add(time_value, output_process_val);
+			this.gui.input_I.add(time_value, input_process_val);
+			this.gui.setpoint_I.add(time_value, this.setpoint);
 		}
 		try 
 		{
