@@ -142,7 +142,7 @@ public class ThreadServer extends Thread
 		this.Ki = Double.parseDouble(this.gui.txt_ki.getText());
 		this.Kd = Double.parseDouble(this.gui.txt_kd.getText());
 		
-		// Send parámeters
+		// Send parámeters usbPort Ts, setpoint, & PID parameters
 		try
 		{
 			out.writeInt(this.usbPort);
