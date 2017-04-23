@@ -141,9 +141,6 @@ public class ThreadServer extends Thread
 		
 	}
 	
-	
-	
-	
 	public void run()
 	{
 		// get user parameters
