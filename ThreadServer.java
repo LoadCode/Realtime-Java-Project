@@ -53,7 +53,7 @@ public class ThreadServer extends Thread
 		finally
 		{
 			System.out.println("Servidor creado con éxito");
-			try 
+			try
 			{
 				this.out = new DataOutputStream(this.socket.getOutputStream());
 				this.in  = new DataInputStream(this.socket.getInputStream());
@@ -67,6 +67,7 @@ public class ThreadServer extends Thread
 			}
 			
 			// Establecemos conexión
+			
 			int client_request = 1;
 			try 
 			{
@@ -103,7 +104,8 @@ public class ThreadServer extends Thread
 						return;
 					}
 				}
-			}// finally 
+			}// finally
+			
 		}//finally
 	}//ThreadServer
 	
@@ -115,11 +117,11 @@ public class ThreadServer extends Thread
 		System.out.format("La cantidad de elementos es: %d\n", this.gui.output_I.getItemCount());
 		
 		// option to save the captured data
-		double[][] logged_signal_I = this.gui.output_I.toArray();
-		double[][] control_signal_I = this.gui.input_I.toArray();
-		double[][] setpoint_signal_I = this.gui.setpoint_I.toArray();
-		double[][] logged_signal_II = this.gui.output_II.toArray();
-		double[][] control_signal_II = this.gui.input_II.toArray();
+		double[][] logged_signal_I    = this.gui.output_I.toArray();
+		double[][] control_signal_I   = this.gui.input_I.toArray();
+		double[][] setpoint_signal_I  = this.gui.setpoint_I.toArray();
+		double[][] logged_signal_II   = this.gui.output_II.toArray();
+		double[][] control_signal_II  = this.gui.input_II.toArray();
 		double[][] setpoint_signal_II = this.gui.setpoint_II.toArray();
 		
 		// Dialogo para seleccionar donde almacenar el archivo
@@ -130,8 +132,12 @@ public class ThreadServer extends Thread
 		if (userSelection == JFileChooser.APPROVE_OPTION) 
 		{
 		    File fileToSave = fileChooser.getSelectedFile();
-		    FileManager fileSaving = new FileManager(fileToSave.getAbsolutePath());
-			fileSaving.save_pid_signals(setpoint_signal_I, logged_signal_I, control_signal_I, setpoint_signal_II, logged_signal_II, control_signal_II);
+		    String filePath = fileToSave.getAbsolutePath();
+		    FileManager fileSaving = new FileManager(filePath.concat("_PID_I"));
+			fileSaving.save_pid_signals(setpoint_signal_I, logged_signal_I, control_signal_I);
+			filePath = fileToSave.getAbsolutePath();
+			fileSaving = new FileManager(filePath.concat("_PID_II"));
+			fileSaving.save_pid_signals(setpoint_signal_II, logged_signal_II, control_signal_II);
 			System.out.println("Archivo guardado");
 		}
 		else
@@ -220,7 +226,7 @@ public class ThreadServer extends Thread
 		try 
 		{
 			System.out.println("Esperando para cerrar los sockets");
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 		} catch (InterruptedException e1) 
 		{
 			System.out.println("Error esperando para cerrar los sockets");
