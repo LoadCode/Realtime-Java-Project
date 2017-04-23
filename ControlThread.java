@@ -1,85 +1,44 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 
 public class ControlThread extends Thread
 {
-	private int usbPort;
-	private double tsT;
-	private double setpointT;
-	private double kpT;
-	private double kiT;
-	private double kdT;
-	private double tsF;
-	private double setpointF;
-	private double kpF;
-	private double kiF;
-	private double kdF;
 	private int finish = 0;
+	private double setpoint;
 	private Window gui;
-	private ServerSocket server;
 	private Socket socket;
 	private DataOutputStream out;
 	private DataInputStream in;
 	private volatile boolean alive = true;
 	
-	public ControlThread(Window _gui)
-	{
+	public ControlThread(Window _gui, Socket _socket, double _setpoint)
+	{	
+		this.socket = _socket;
+		this.setpoint = _setpoint;
 		this.gui = _gui;
-		this.alive = true;
-		// Create server
-		System.out.println("Starting Loggin thread");
 		try 
 		{
-			this.server = new ServerSocket(54067);
-			this.socket = server.accept();
+			this.out = new DataOutputStream(this.socket.getOutputStream());
+			this.in  = new DataInputStream(this.socket.getInputStream());
+			out.flush();
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("problema creando el servidor Java");
+			System.out.println("Error obteniendo los streams de un cliente controlador");
 			e.printStackTrace();
 			return;
 		}
-		finally
-		{
-			System.out.println("Servidor creado con éxito");
-			try 
-			{
-				this.out = new DataOutputStream(this.socket.getOutputStream());
-				this.in  = new DataInputStream(this.socket.getInputStream());
-				out.flush();
-			} 
-			catch (IOException e) 
-			{
-				System.out.println("Error obteniendo los streams");
-				e.printStackTrace();
-				return;
-			}
-		}
-		// get user parameters
-		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
-		this.tsT = Double.parseDouble(this.gui.txt_sample_time_I.getText());
-		this.setpointT = Double.parseDouble(this.gui.txt_setpoint_I.getText());
-		this.kpT = Double.parseDouble(this.gui.txt_kp_T.getText());
-		this.kiT = Double.parseDouble(this.gui.txt_ki_T.getText());
-		this.kdT = Double.parseDouble(this.gui.txt_kd_T.getText());
-		this.tsF = Double.parseDouble(this.gui.txt_sample_time_II.getText());
-		this.setpointF = Double.parseDouble(this.gui.txt_setpoint_II.getText());
-		this.kpF = Double.parseDouble(this.gui.txt_kp_F.getText());
-		this.kiF = Double.parseDouble(this.gui.txt_ki_F.getText());
-		this.kdF = Double.parseDouble(this.gui.txt_kd_F.getText());
+		System.out.println("Hilo controlador creado");
 	}
-	
+
 	public void run()
 	{
 		double output_process_val = 0;
 		double input_process_val = 0;
 		double time_value = 0;
-		
 		while(this.alive)
 		{
 			try
@@ -95,7 +54,35 @@ public class ControlThread extends Thread
 			}
 			this.gui.output_I.add(time_value, output_process_val);
 			this.gui.input_I.add(time_value, input_process_val);
-			this.gui.setpoint_I.add(time_value, this.setpointT);
+			this.gui.setpoint_I.add(time_value, this.setpoint);
 		}
+		try 
+		{
+			System.out.println("Esperando para cerrar los sockets");
+			Thread.sleep(2000);
+		} catch (InterruptedException e1) 
+		{
+			System.out.println("Error esperando para cerrar los sockets");
+			e1.printStackTrace();
+		}
+		try 
+		{
+			this.out.close();
+			this.in.close();
+			this.socket.close();
+		} catch (IOException e) 
+		{
+			System.out.println("No se pudo cerrar el socket al dejar el hilo");
+			e.printStackTrace();
+		}
+		System.out.println("Hilo controlador terminado");
 	}
+	
+	
+	public void terminate()
+	{
+		this.alive = false;
+		this.finish = 1;
+	}
+	
 }

@@ -9,6 +9,7 @@ import javax.swing.JFileChooser;
 public class ThreadServer extends Thread
 {
 	private int usbPort;
+	private final int SERVER_PORT = 34869;
 	private double tsT;
 	private double setpointT;
 	private double kpT;
@@ -21,13 +22,15 @@ public class ThreadServer extends Thread
 	private double kdF;
 	private int server_answer = 2958;
 	private int valid_client_request = 45862;
-	private int finish = 0;
 	private Window gui;
 	private ServerSocket server;
 	private Socket socket;
 	private DataOutputStream out;
 	private DataInputStream in;
-	private volatile boolean alive = true;
+	private ControlThread threadTemp;
+	private ControlThread threadFlow;
+	
+	
 	
 	public ThreadServer(Window _gui)
 	{
@@ -39,7 +42,7 @@ public class ThreadServer extends Thread
 		System.out.println("Starting Loggin thread");
 		try 
 		{
-			this.server = new ServerSocket(2222);
+			this.server = new ServerSocket(this.SERVER_PORT);
 			this.socket = server.accept();
 		} 
 		catch (IOException e) 
@@ -108,9 +111,8 @@ public class ThreadServer extends Thread
 	public void terminate()
 	{
 		// llamar al terminate de cada hilo controlador y venir a capturar sus datos
-		
-		this.alive = false;
-		this.finish = 1;
+		threadTemp.terminate();
+		threadFlow.terminate();
 		System.out.format("La cantidad de elementos es: %d\n", this.gui.output_I.getItemCount());
 		
 		// option to save the captured data
@@ -137,13 +139,11 @@ public class ThreadServer extends Thread
 		
 	}
 	
+	
+	
+	
 	public void run()
 	{
-		ControlThread control_1 = new ControlThread(this.gui);
-		double output_process_val = 0.0;
-		double input_process_val  = 0.0; //PID computed values
-		double time_value = 0.0;
-		
 		// get user parameters
 		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
 		this.tsT = Double.parseDouble(this.gui.txt_sample_time_I.getText());
@@ -180,7 +180,44 @@ public class ThreadServer extends Thread
 		}
 		
 		// crear un par de hilos por cada controlador
+		// Control temperatura
+		try
+		{
+			this.socket = server.accept();
+			threadTemp = new ControlThread(this.gui, this.socket, this.setpointT);
+			threadTemp.start();
+		}
+		catch(Exception e)
+		{
+	        e.printStackTrace();
+	        System.out.println("Connection Error: creating the temp thread");
+		}
 		
+		// Control temperatura
+		try
+		{
+			this.socket = server.accept();
+			threadFlow = new ControlThread(this.gui, this.socket, this.setpointF);
+			threadFlow.start();
+		}
+		catch(Exception e)
+		{
+	        e.printStackTrace();
+	        System.out.println("Connection Error: creating the flow thread");
+		}
+		
+		
+		//Esperando a que los hilos terminen
+		try 
+		{
+			threadTemp.join();
+			threadFlow.join();
+		} catch (InterruptedException e2) 
+		{
+			e2.printStackTrace();
+		}
+		
+		// cerrando el socket principal, los demás sockets se deben cerrar dentro de los respectivos hilos
 		try 
 		{
 			System.out.println("Esperando para cerrar los sockets");
@@ -201,6 +238,6 @@ public class ThreadServer extends Thread
 			System.out.println("No se pudo cerrar el socket al dejar el hilo");
 			e.printStackTrace();
 		}
-		System.out.println("Socket cerrado exitosamente & hilo terminado");
+		System.out.println("Socket principal cerrado exitosamente & hilo terminado");
 	}
 }
