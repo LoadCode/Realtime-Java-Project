@@ -42,7 +42,7 @@ public class Window extends JFrame
 	public Window()
 	{
 		this.setTitle("Real Time Control App");
-		this.setBounds(300,440,500,300);
+		this.setBounds(600,440,800,550);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));

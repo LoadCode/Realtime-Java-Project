@@ -9,11 +9,16 @@ import javax.swing.JFileChooser;
 public class ThreadServer extends Thread
 {
 	private int usbPort;
-	private double ts;
-	private double setpoint;
-	private double Kp;
-	private double Ki;
-	private double Kd;
+	private double tsT;
+	private double setpointT;
+	private double kpT;
+	private double kiT;
+	private double kdT;
+	private double tsF;
+	private double setpointF;
+	private double kpF;
+	private double kiF;
+	private double kdF;
 	private int server_answer = 2958;
 	private int valid_client_request = 45862;
 	private int finish = 0;
@@ -28,10 +33,10 @@ public class ThreadServer extends Thread
 	{
 		this.gui = _gui;
 		this.usbPort = 16;
-		this.ts = 0.1;
+		this.tsT = 0.1;
 		
 		// Create server
-		System.out.println("Stating Loggin thread");
+		System.out.println("Starting Loggin thread");
 		try 
 		{
 			this.server = new ServerSocket(2222);
@@ -51,7 +56,8 @@ public class ThreadServer extends Thread
 				this.out = new DataOutputStream(this.socket.getOutputStream());
 				this.in  = new DataInputStream(this.socket.getInputStream());
 				out.flush();
-			} catch (IOException e) 
+			} 
+			catch (IOException e) 
 			{
 				System.out.println("Error obteniendo los streams");
 				e.printStackTrace();
@@ -68,7 +74,8 @@ public class ThreadServer extends Thread
 				System.out.println("No se pudo escribir valor al cliente");
 				e.printStackTrace();
 				return;
-			}finally
+			}
+			finally
 			{
 				if(client_request == this.valid_client_request)
 				{
@@ -100,6 +107,8 @@ public class ThreadServer extends Thread
 	
 	public void terminate()
 	{
+		// llamar al terminate de cada hilo controlador y venir a capturar sus datos
+		
 		this.alive = false;
 		this.finish = 1;
 		System.out.format("La cantidad de elementos es: %d\n", this.gui.output_I.getItemCount());
@@ -130,27 +139,38 @@ public class ThreadServer extends Thread
 	
 	public void run()
 	{
+		ControlThread control_1 = new ControlThread(this.gui);
 		double output_process_val = 0.0;
 		double input_process_val  = 0.0; //PID computed values
 		double time_value = 0.0;
 		
 		// get user parameters
 		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
-		this.ts = Double.parseDouble(this.gui.txt_sample_time_I.getText());
-		this.setpoint = Double.parseDouble(this.gui.txt_setpoint_I.getText());
-		this.Kp = Double.parseDouble(this.gui.txt_kp_T.getText());
-		this.Ki = Double.parseDouble(this.gui.txt_ki_T.getText());
-		this.Kd = Double.parseDouble(this.gui.txt_kd_T.getText());
+		this.tsT = Double.parseDouble(this.gui.txt_sample_time_I.getText());
+		this.setpointT = Double.parseDouble(this.gui.txt_setpoint_I.getText());
+		this.kpT = Double.parseDouble(this.gui.txt_kp_T.getText());
+		this.kiT = Double.parseDouble(this.gui.txt_ki_T.getText());
+		this.kdT = Double.parseDouble(this.gui.txt_kd_T.getText());
+		this.tsF = Double.parseDouble(this.gui.txt_sample_time_II.getText());
+		this.setpointF = Double.parseDouble(this.gui.txt_setpoint_II.getText());
+		this.kpF = Double.parseDouble(this.gui.txt_kp_F.getText());
+		this.kiF = Double.parseDouble(this.gui.txt_ki_F.getText());
+		this.kdF = Double.parseDouble(this.gui.txt_kd_F.getText());
 		
 		// Send parámeters usbPort Ts, setpoint, & PID parameters
 		try
 		{
 			out.writeInt(this.usbPort);
-			out.writeDouble(this.ts);
-			out.writeDouble(this.setpoint);
-			out.writeDouble(this.Kp);
-			out.writeDouble(this.Ki);
-			out.writeDouble(this.Kd);
+			out.writeDouble(this.tsT);
+			out.writeDouble(this.setpointT);
+			out.writeDouble(this.kpT);
+			out.writeDouble(this.kiT);
+			out.writeDouble(this.kdT);
+			out.writeDouble(this.tsF);
+			out.writeDouble(this.setpointF);
+			out.writeDouble(this.kpF);
+			out.writeDouble(this.kiF);
+			out.writeDouble(this.kdF);
 		}
 		catch (IOException e) 
 		{
@@ -159,24 +179,8 @@ public class ThreadServer extends Thread
 			return;
 		}
 		
+		// crear un par de hilos por cada controlador
 		
-		while(this.alive)
-		{
-			try 
-			{
-				output_process_val = this.in.readDouble();
-				input_process_val  = this.in.readDouble();
-				time_value = this.in.readDouble();
-				out.writeInt(this.finish);
-			} catch (IOException e)
-			{
-				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
-				e.printStackTrace();
-			}
-			this.gui.output_I.add(time_value, output_process_val);
-			this.gui.input_I.add(time_value, input_process_val);
-			this.gui.setpoint_I.add(time_value, this.setpoint);
-		}
 		try 
 		{
 			System.out.println("Esperando para cerrar los sockets");
