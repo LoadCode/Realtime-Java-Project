@@ -13,12 +13,14 @@ public class ControlThread extends Thread
 	private DataOutputStream out;
 	private DataInputStream in;
 	private volatile boolean alive = true;
+	private int threadId;
 	
-	public ControlThread(Window _gui, Socket _socket, double _setpoint)
+	public ControlThread(Window _gui, Socket _socket, double _setpoint, int _threadId)
 	{	
 		this.socket = _socket;
 		this.setpoint = _setpoint;
 		this.gui = _gui;
+		this.threadId = _threadId;
 		try 
 		{
 			this.out = new DataOutputStream(this.socket.getOutputStream());
@@ -52,9 +54,18 @@ public class ControlThread extends Thread
 				System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 				e.printStackTrace();
 			}
-			this.gui.output_I.add(time_value, output_process_val);
-			this.gui.input_I.add(time_value, input_process_val);
-			this.gui.setpoint_I.add(time_value, this.setpoint);
+			if(this.threadId == 1)
+			{
+				this.gui.output_I.add(time_value, output_process_val);
+				this.gui.input_I.add(time_value, input_process_val);
+				this.gui.setpoint_I.add(time_value, this.setpoint);
+			}
+			else if(this.threadId == 2)
+			{
+				this.gui.output_II.add(time_value, output_process_val);
+				this.gui.input_II.add(time_value, input_process_val);
+				this.gui.setpoint_II.add(time_value, this.setpoint);
+			}
 		}
 		try 
 		{

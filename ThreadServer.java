@@ -31,7 +31,6 @@ public class ThreadServer extends Thread
 	private ControlThread threadFlow;
 	
 	
-	
 	public ThreadServer(Window _gui)
 	{
 		this.gui = _gui;
@@ -116,9 +115,12 @@ public class ThreadServer extends Thread
 		System.out.format("La cantidad de elementos es: %d\n", this.gui.output_I.getItemCount());
 		
 		// option to save the captured data
-		double[][] logged_signal = this.gui.output_I.toArray();
-		double[][] control_signal = this.gui.input_I.toArray();
-		double[][] setpoint_signal = this.gui.setpoint_I.toArray();
+		double[][] logged_signal_I = this.gui.output_I.toArray();
+		double[][] control_signal_I = this.gui.input_I.toArray();
+		double[][] setpoint_signal_I = this.gui.setpoint_I.toArray();
+		double[][] logged_signal_II = this.gui.output_II.toArray();
+		double[][] control_signal_II = this.gui.input_II.toArray();
+		double[][] setpoint_signal_II = this.gui.setpoint_II.toArray();
 		
 		// Dialogo para seleccionar donde almacenar el archivo
 		JFileChooser fileChooser = new JFileChooser();
@@ -129,7 +131,7 @@ public class ThreadServer extends Thread
 		{
 		    File fileToSave = fileChooser.getSelectedFile();
 		    FileManager fileSaving = new FileManager(fileToSave.getAbsolutePath());
-			fileSaving.save_pid_signals(setpoint_signal, logged_signal, control_signal);
+			fileSaving.save_pid_signals(setpoint_signal_I, logged_signal_I, control_signal_I, setpoint_signal_II, logged_signal_II, control_signal_II);
 			System.out.println("Archivo guardado");
 		}
 		else
@@ -184,7 +186,7 @@ public class ThreadServer extends Thread
 		try
 		{
 			this.socket = server.accept();
-			threadTemp = new ControlThread(this.gui, this.socket, this.setpointT);
+			threadTemp = new ControlThread(this.gui, this.socket, this.setpointT, 1);
 			threadTemp.start();
 		}
 		catch(Exception e)
@@ -197,7 +199,7 @@ public class ThreadServer extends Thread
 		try
 		{
 			this.socket = server.accept();
-			threadFlow = new ControlThread(this.gui, this.socket, this.setpointF);
+			threadFlow = new ControlThread(this.gui, this.socket, this.setpointF, 2);
 			threadFlow.start();
 		}
 		catch(Exception e)

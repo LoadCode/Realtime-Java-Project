@@ -12,11 +12,16 @@ public class FileManager
 	}
 	
 	
-	public void save_pid_signals(double [][]setpoint, double [][]signal, double [][]control)
+	public void save_pid_signals(double [][]setpointI, 
+								 double [][]signalI, 
+								 double [][]controlI, 
+								 double [][]setpointII, 
+								 double [][]signalII, 
+								 double [][]controlII)
 	{
 		/*
 		 * Este método genera una archivo con cuatro columnas que corresponden a:
-		 *    datos_tiempo     datos_setpoint     datos_control     datos_salida_planta
+		 *    datos_tiempo    datos_setpoint	datos_control	salida_planta_I	  datos_tiempo_II	 datos_setpoint_II	  datos_control_II	  salida_planta_II
 		 * */
 		BufferedWriter bufferedWriter = null;
 		FileWriter fileWriter = null;
@@ -26,8 +31,8 @@ public class FileManager
 			fileWriter = new FileWriter(this.fileName, true);
 			bufferedWriter = new BufferedWriter(fileWriter);
 			printWriter = new PrintWriter(bufferedWriter);
-			for(int i = 0; i < signal[0].length; i++)                  //time        //setpoint     //control      //plant's output    
-				bufferedWriter.write(String.format("%f\t%f\t%f\t%f\n", signal[0][i], setpoint[1][i], control[1][i], signal[1][i]));
+			for(int i = 0; i < signalI[0].length; i++)                                 //time        //setpoint     //control      //first plant's output  //time_process_II  //setpoint        //control_process_2     //second plant's output  
+				bufferedWriter.write(String.format("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%\n", signalI[0][i], setpointI[1][i], controlI[1][i], signalI[1][i],       signalII[0][i],    setpointII[1][i], controlII[1][i],        signalII[1][i]));
 				
 		}
 		catch(IOException e)
