@@ -1,9 +1,19 @@
 # Realtime Project Java Server
-Este repositorio contiene la implementación del servidor Java incluyendo la 
-interfaz gráfica y otras utilidades para realizar el muestreo, gráficar y guardar
-los datos capturados por la aplicación.
+Este repositorio contiene la implementación del servidor Java incluyendo la interfaz gráfica y otras utilidades para realizar el muestreo, controlar, gráficar y guardar los datos capturados por la aplicación.
 
-## Instrucciones:
+## Arquitectura Simplificada de la Aplicación
+![](diagramaServer.png "Esquema simplificado del servidor Java")
+
+La aplicación en su componente gráfica (interfaz de usuario) se muestra a continuación, allí se pueden apreciar los parámetros que esta acepta y el mecanismo de interacción con la misma.
+
+![](GUIstatus.png "Interfaz gráfica de usuario")
+
+Para asegurar que todo ha salido según lo previsto, la aplicación en Java también muestra información a través de la terminal de comando donde está siendo ejecutado el Servidor, un ejemplo de ello se muestra en la siguiente imagen.
+
+![](salidaJavaServer.png "Salida por terminal del server-side")
+
+Para mayor información completa, puede remitirse a la documentación adicional del [cliente desarrollado en C](https://github.com/LoadCode/Realtime-Project-C-Client) (Esta documentación aún se encuentra en desarrollo).
+
 
 ### Compilar:
 Para compilar este proyecto, en primer lugar debe ejecutar la siguiente línea en la
@@ -16,6 +26,7 @@ export CLASSPATH=$CLASSPATH:./lib/jfreechart-1.0.19.jar:./lib/jcommon-1.0.23.jar
 ### Ejecutar:
 Para ejecutar la aplicación escriba en la terminal:
 	`java Main`
+
 
 
 ### Notas Importantes
