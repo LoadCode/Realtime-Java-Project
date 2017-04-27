@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JFileChooser;
 
+
 public class ThreadServer extends Thread
 {
 	private int usbPort;
@@ -20,8 +21,10 @@ public class ThreadServer extends Thread
 	private double kpF;
 	private double kiF;
 	private double kdF;
-	private int server_answer = 2958;
+	private int server_answer        = 2958;
 	private int valid_client_request = 45862;
+	private int openloopSignal       = 54378;
+	private int closedloopSignal     = 45876; 
 	private Window gui;
 	private ServerSocket server;
 	private Socket socket;
@@ -34,8 +37,6 @@ public class ThreadServer extends Thread
 	public ThreadServer(Window _gui)
 	{
 		this.gui = _gui;
-		this.usbPort = 16;
-		this.tsT = 0.1;
 		
 		// Create server
 		System.out.println("Starting Loggin thread");
@@ -150,39 +151,98 @@ public class ThreadServer extends Thread
 	public void run()
 	{
 		// get user parameters
+		int signalSendPidI;
+		int signalSendPidII;
 		this.usbPort = Integer.parseInt(this.gui.txt_port.getText());
 		this.tsT = Double.parseDouble(this.gui.txt_sample_time_I.getText());
 		this.setpointT = Double.parseDouble(this.gui.txt_setpoint_I.getText());
-		this.kpT = Double.parseDouble(this.gui.txt_kp_T.getText());
 		this.kiT = Double.parseDouble(this.gui.txt_ki_T.getText());
 		this.kdT = Double.parseDouble(this.gui.txt_kd_T.getText());
 		this.tsF = Double.parseDouble(this.gui.txt_sample_time_II.getText());
 		this.setpointF = Double.parseDouble(this.gui.txt_setpoint_II.getText());
-		this.kpF = Double.parseDouble(this.gui.txt_kp_F.getText());
 		this.kiF = Double.parseDouble(this.gui.txt_ki_F.getText());
 		this.kdF = Double.parseDouble(this.gui.txt_kd_F.getText());
 		
-		// Send parámeters usbPort Ts, setpoint, & PID parameters
+		// enviar información del puerto usb asociado a la tarjeta de adquisición
 		try
 		{
 			out.writeInt(this.usbPort);
-			out.writeDouble(this.tsT);
-			out.writeDouble(this.setpointT);
-			out.writeDouble(this.kpT);
-			out.writeDouble(this.kiT);
-			out.writeDouble(this.kdT);
-			out.writeDouble(this.tsF);
-			out.writeDouble(this.setpointF);
-			out.writeDouble(this.kpF);
-			out.writeDouble(this.kiF);
-			out.writeDouble(this.kdF);
 		}
-		catch (IOException e) 
+		catch(IOException e)
+		{
+			System.out.println("No se pudo enviar información del puerto USB asociado");
+			e.printStackTrace();
+			return;
+		}
+		
+		if(this.gui.txt_kp_T.getText().equals("openloop"))
+		{
+			signalSendPidI = this.openloopSignal;
+		}
+		else
+		{
+			signalSendPidI = this.closedloopSignal;
+			this.kpT = Double.parseDouble(this.gui.txt_kp_T.getText());
+		}
+		
+		if(this.gui.txt_kp_F.getText().equals("openloop"))
+		{
+			signalSendPidII = this.openloopSignal;
+		}
+		else
+		{
+			signalSendPidII = this.closedloopSignal;
+			this.kpF = Double.parseDouble(this.gui.txt_kp_F.getText());
+		}
+		
+		// Envía la señal openloop o closedloop y los respectivos parámetros para el proceso I
+		try
+		{
+			out.writeInt(signalSendPidI);
+			if(signalSendPidI == this.openloopSignal)
+			{
+				out.writeDouble(this.tsT);
+				out.writeDouble(this.setpointT);
+			}
+			else
+			{
+				out.writeDouble(this.tsT);
+				out.writeDouble(this.setpointT);
+				out.writeDouble(this.kpT);
+				out.writeDouble(this.kiT);
+				out.writeDouble(this.kdT);
+			}
+		}catch (IOException e) 
 		{
 			System.out.println("Error al enviar parámetros usbPort, Ts");
 			e.printStackTrace();
 			return;
 		}
+		
+		// Envía la señal openloop o closedloop y los respectivos parámetros para el proceso II
+		try
+		{
+			out.writeInt(signalSendPidII);
+			if(signalSendPidII == this.openloopSignal)
+			{
+				out.writeDouble(this.tsF);
+				out.writeDouble(this.setpointF);
+			}
+			else
+			{
+				out.writeDouble(this.tsF);
+				out.writeDouble(this.setpointF);
+				out.writeDouble(this.kpF);
+				out.writeDouble(this.kiF);
+				out.writeDouble(this.kdF);
+			}
+		}catch (IOException e) 
+		{
+			System.out.println("Error al enviar parámetros usbPort, Ts");
+			e.printStackTrace();
+			return;
+		}
+		
 		
 		// crear un par de hilos por cada controlador
 		// Control temperatura
