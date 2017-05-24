@@ -42,7 +42,7 @@ public class Window extends JFrame
 		JPanel parametersPanel = new JPanel();
 		JLabel lbl_server_ip    = new JLabel("Server IP");
 		txt_server_ip = new JTextField("192.168.");
-		btn_server_init = new JButton("Start Session");
+		btn_server_start = new JButton("Start Session");
 		btn_server_stop	= new JButton("Stop Session");
 		btn_server_init.setActionCommand("start");
 		btn_server_stop.setActionCommand("stop");
