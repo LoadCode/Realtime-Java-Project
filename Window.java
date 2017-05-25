@@ -27,6 +27,8 @@ public class Window extends JFrame
 	final XYSeriesCollection collectionData;
 	final JFreeChart display;
 	public JTextField txt_server_ip;
+	public JTextField txt_setpoint_temp;
+	public JTextField txt_setpoint_flow;
 	public JButton btn_server_start;
 	public JButton btn_server_stop;
 	
@@ -39,16 +41,27 @@ public class Window extends JFrame
 		mainPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
 		/*Parameters panel*/
-		JPanel parametersPanel = new JPanel();
+		JPanel parametersPanel  = new JPanel();
 		JLabel lbl_server_ip    = new JLabel("Server IP");
+		JLabel lbl_setpoint_I   = new JLabel("Setpoint Temp.(v)");
+		JLabel lbl_setpoint_II  = new JLabel("Setpoint Flow.(v)");
+		txt_setpoint_temp = new JTextField("1.0");
+		txt_setpoint_flow = new JTextField("2.0");
 		txt_server_ip = new JTextField("192.168.");
-		btn_server_start = new JButton("Start Session");
+		txt_setpoint_temp.setHorizontalAlignment(JTextField.CENTER);
+		txt_setpoint_flow.setHorizontalAlignment(JTextField.CENTER);
+		txt_server_ip.setHorizontalAlignment(JTextField.CENTER);
+		btn_server_start = new JButton("Send Values");
 		btn_server_stop	= new JButton("Stop Session");
 		btn_server_start.setActionCommand("start");
 		btn_server_stop.setActionCommand("stop");
-		parametersPanel.setLayout(new GridLayout(2, 2,10,10));
+		parametersPanel.setLayout(new GridLayout(4, 2,10,10));
 		parametersPanel.add(lbl_server_ip);
 		parametersPanel.add(txt_server_ip);
+		parametersPanel.add(lbl_setpoint_I);
+		parametersPanel.add(txt_setpoint_temp);
+		parametersPanel.add(lbl_setpoint_II);
+		parametersPanel.add(txt_setpoint_flow);
 		parametersPanel.add(btn_server_start);
 		parametersPanel.add(btn_server_stop);
 		mainPanel.add(parametersPanel, BorderLayout.EAST);
