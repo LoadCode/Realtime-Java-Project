@@ -21,12 +21,12 @@ public class ControlThread extends Thread
 		this.setpoint = _setpoint;
 		this.gui = _gui;
 		this.threadId = _threadId;
-		try 
+		try
 		{
 			this.out = new DataOutputStream(this.socket.getOutputStream());
 			this.in  = new DataInputStream(this.socket.getInputStream());
 			out.flush();
-		} 
+		}
 		catch (IOException e) 
 		{
 			System.out.println("Error obteniendo los streams de un cliente controlador");
