@@ -98,13 +98,14 @@ public class ThreadClient extends Thread
 			// Enviar Finish y Data Flags
 			try
 			{
+				this.out.flush();
 				this.out.writeInt(finishFlag);
 				this.out.writeInt(dataFlag);
 			}catch(IOException e)
 			{
 				System.out.println("Error enviando la señalización al servidor");
 				e.printStackTrace();
-				this.alive = false;
+				//this.alive = false;
 			}
 				
 
@@ -112,7 +113,7 @@ public class ThreadClient extends Thread
 			{
 				// Terminar todo el hilo adecuadamente (cerrar la conexión)
 				System.out.println("Cerrando la conexión");
-				this.alive = false;
+				//this.alive = false;
 			}
 			else if(dataFlag == 1)
 			{
@@ -130,10 +131,10 @@ public class ThreadClient extends Thread
 				{
 					System.out.println("Error enviando valores de setpoint");
 					e.printStackTrace();
-					this.alive = false;
+					//this.alive = false;
 				}
-				dataFlag = 0;
-			}
+			 }
+			dataFlag = 0;
 			
 			// Lectura de valores provenientes de la planta
 			if(finishFlag == 0)
@@ -149,9 +150,10 @@ public class ThreadClient extends Thread
 				{
 					System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 					e.printStackTrace();
-					this.alive = false;
+					//this.alive = false;
 				}
 			}
+			//System.out.println("u_temp="+u_temp+" u_flow="+u_flow+" outemp="+out_temp+" outFlow="+out_flow+" time="+time_value);
 			// Actualizar gráficos con los nuevos valores
 			this.UpdateChart();
 	    }
@@ -182,8 +184,8 @@ public class ThreadClient extends Thread
 		this.gui.output_I.add(time_value, this.out_temp);
 		this.gui.input_I.add(time_value, this.u_temp);
 		this.gui.setpoint_I.add(time_value, this.setpoint_temp);
-        this.gui.output_I.add(time_value, this.out_flow);
-		this.gui.input_I.add(time_value, this.u_flow);
-		this.gui.setpoint_I.add(time_value, this.setpoint_flow);
+        this.gui.output_II.add(time_value, this.out_flow);
+		this.gui.input_II.add(time_value, this.u_flow);
+		this.gui.setpoint_II.add(time_value, this.setpoint_flow);
 	}//UpdateChart
 }
