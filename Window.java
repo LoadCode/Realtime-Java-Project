@@ -47,7 +47,7 @@ public class Window extends JFrame
 		JLabel lbl_setpoint_II  = new JLabel("Setpoint Flow.(v)");
 		txt_setpoint_temp = new JTextField("1.0");
 		txt_setpoint_flow = new JTextField("2.0");
-		txt_server_ip = new JTextField("192.168.");
+		txt_server_ip = new JTextField("127.0.0.1");
 		txt_setpoint_temp.setHorizontalAlignment(JTextField.CENTER);
 		txt_setpoint_flow.setHorizontalAlignment(JTextField.CENTER);
 		txt_server_ip.setHorizontalAlignment(JTextField.CENTER);
@@ -68,12 +68,12 @@ public class Window extends JFrame
 		this.getContentPane().add(mainPanel, BorderLayout.EAST);
 		
 		// Setup the Chart panel
-		input_I    = new XYSeries("PID I Signal");
-		output_I   = new XYSeries("Process Output I");
-		setpoint_I = new XYSeries("Setpoint I");
-		input_II    = new XYSeries("PID II Signal");
-		output_II   = new XYSeries("Process Output II");
-		setpoint_II = new XYSeries("Setpoint II");
+		input_I    = new XYSeries("PID Temp.");
+		output_I   = new XYSeries("Temp.");
+		setpoint_I = new XYSeries("Setpoint Temp.");
+		input_II    = new XYSeries("PID Flow");
+		output_II   = new XYSeries("Flow");
+		setpoint_II = new XYSeries("Setpoint Flow");
 		input_I.clear();
 		output_I.clear();
 		setpoint_I.clear();
