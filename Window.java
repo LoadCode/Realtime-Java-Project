@@ -47,7 +47,7 @@ public class Window extends JFrame
 		JLabel lbl_setpoint_II  = new JLabel("Setpoint Flow.(v)");
 		txt_setpoint_temp = new JTextField("1.0");
 		txt_setpoint_flow = new JTextField("2.0");
-		txt_server_ip = new JTextField("127.0.0.1");
+		txt_server_ip = new JTextField("192.168.0.10");
 		txt_setpoint_temp.setHorizontalAlignment(JTextField.CENTER);
 		txt_setpoint_flow.setHorizontalAlignment(JTextField.CENTER);
 		txt_server_ip.setHorizontalAlignment(JTextField.CENTER);

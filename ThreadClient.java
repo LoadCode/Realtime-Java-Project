@@ -9,9 +9,9 @@ import javax.swing.JFileChooser;
 
 public class ThreadClient extends Thread
 {
-	private final int SERVER_PORT = 3385;
-	public int dataFlag;
-	public int finishFlag;
+	private final int SERVER_PORT = 9090;
+	public byte dataFlag;
+	public byte finishFlag;
 	private Window gui;
 	private String SERVER_IP;
 	private Socket socket;
@@ -99,8 +99,8 @@ public class ThreadClient extends Thread
 			try
 			{
 				this.out.flush();
-				this.out.writeInt(finishFlag);
-				this.out.writeInt(dataFlag);
+				this.out.writeByte(finishFlag);
+				this.out.writeByte(dataFlag);
 			}catch(IOException e)
 			{
 				System.out.println("Error enviando la señalización al servidor");
@@ -153,7 +153,7 @@ public class ThreadClient extends Thread
 					break;
 				}
 			}
-			System.out.println("u_temp="+u_temp+" u_flow="+u_flow+" outemp="+out_temp+" outFlow="+out_flow+" time="+time_value+" setTemp="+setpoint_temp+" setFlow="+setpoint_flow);
+			//System.out.println("u_temp="+u_temp+" u_flow="+u_flow+" outemp="+out_temp+" outFlow="+out_flow+" time="+time_value+" setTemp="+setpoint_temp+" setFlow="+setpoint_flow);
 			// Actualizar gráficos con los nuevos valores
 			this.UpdateChart();
 	    }
