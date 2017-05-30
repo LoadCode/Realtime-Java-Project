@@ -105,7 +105,6 @@ public class ThreadClient extends Thread
 			{
 				System.out.println("Error enviando la señalización al servidor");
 				e.printStackTrace();
-				//this.alive = false;
 			}
 				
 
@@ -113,7 +112,8 @@ public class ThreadClient extends Thread
 			{
 				// Terminar todo el hilo adecuadamente (cerrar la conexión)
 				System.out.println("Cerrando la conexión");
-				//this.alive = false;
+				this.alive = false;
+				break;
 			}
 			else if(dataFlag == 1)
 			{
@@ -131,7 +131,7 @@ public class ThreadClient extends Thread
 				{
 					System.out.println("Error enviando valores de setpoint");
 					e.printStackTrace();
-					//this.alive = false;
+					break;
 				}
 			 }
 			dataFlag = 0;
@@ -150,6 +150,7 @@ public class ThreadClient extends Thread
 				{
 					System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 					e.printStackTrace();
+					break;
 					//this.alive = false;
 				}
 			}
@@ -157,8 +158,9 @@ public class ThreadClient extends Thread
 			// Actualizar gráficos con los nuevos valores
 			this.UpdateChart();
 	    }
-		try 
-		{
+		this.alive = false;
+		try
+   		{
 			System.out.println("Esperando para cerrar los sockets");
 			Thread.sleep(4000);
 		} catch (InterruptedException e1) 
