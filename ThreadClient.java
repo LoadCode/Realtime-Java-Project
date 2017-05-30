@@ -9,7 +9,7 @@ import javax.swing.JFileChooser;
 
 public class ThreadClient extends Thread
 {
-	private final int SERVER_PORT = 9090;
+	private final int SERVER_PORT = 3385;
 	public int dataFlag;
 	public int finishFlag;
 	private Window gui;
@@ -81,7 +81,7 @@ public class ThreadClient extends Thread
 		try
 		{
 			this.SERVER_IP = this.gui.txt_server_ip.getText();
-			socket = new Socket(SERVER_IP, SERVER_PORT);
+			socket = new Socket(this.SERVER_IP, SERVER_PORT);
 			out = new DataOutputStream(socket.getOutputStream());
 			in  = new DataInputStream(socket.getInputStream());
 		}
@@ -91,8 +91,8 @@ public class ThreadClient extends Thread
 			e.printStackTrace();
 			this.alive = false;
 		}
-
-
+		
+		
 		while(this.alive)
 		{
 			// Enviar Finish y Data Flags
@@ -106,8 +106,8 @@ public class ThreadClient extends Thread
 				System.out.println("Error enviando la señalización al servidor");
 				e.printStackTrace();
 			}
-				
-
+			
+			
 			if(finishFlag == 1)
 			{
 				// Terminar todo el hilo adecuadamente (cerrar la conexión)
@@ -151,10 +151,9 @@ public class ThreadClient extends Thread
 					System.out.println("No se pudo hacer la lectura de la señal o la transferencia del finish");
 					e.printStackTrace();
 					break;
-					//this.alive = false;
 				}
 			}
-			//System.out.println("u_temp="+u_temp+" u_flow="+u_flow+" outemp="+out_temp+" outFlow="+out_flow+" time="+time_value);
+			System.out.println("u_temp="+u_temp+" u_flow="+u_flow+" outemp="+out_temp+" outFlow="+out_flow+" time="+time_value+" setTemp="+setpoint_temp+" setFlow="+setpoint_flow);
 			// Actualizar gráficos con los nuevos valores
 			this.UpdateChart();
 	    }
